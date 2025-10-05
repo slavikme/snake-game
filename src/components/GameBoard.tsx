@@ -113,7 +113,7 @@ const GameBoard: FC<GameBoardProps> = ({
         </li>
         <li className="flex items-center gap-2">
           <span className="whitespace-nowrap">Top Score:</span>
-          <span>{topScore}</span>
+          <span>{topScore.toFixed(0)}</span>
         </li>
       </ul>
       <div

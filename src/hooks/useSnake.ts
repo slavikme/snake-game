@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const SPEED_START_MS = 200;
 const SPEED_REDUCTION_FACTOR = 0.1;
 
 type Direction = "up" | "down" | "left" | "right";
@@ -18,25 +17,95 @@ type SnakeBodyCell = {
 
 type SnakeBody = [SnakeBodyCell, ...SnakeBodyCell[]];
 
-const useSnake = (columns: number, rows: number) => {
-  const [body, setBody] = useState<SnakeBody>([
-    {
+export type FoodKind = "apple";
+
+export type UseSnakeOptions = {
+  /**
+   * The initial interval in milliseconds of the snake.
+   * This is the time between each step of the snake.
+   * If not provided, it is automatically calculated based on the columns and rows.
+   */
+  initialIntervalMs?: number;
+
+  /**
+   * The factor by which the interval is reduced when the snake eats a food.
+   * This is the factor by which the interval is reduced.
+   * If not provided, it is 0.1.
+   */
+  intervalReductionFactor?: number;
+
+  /**
+   * The initial direction of the snake.
+   * If not provided, it is "up".
+   */
+  initialDirection?: Direction;
+
+  /**
+   * The initial position of the snake.
+   * If not provided, it is the center of the board.
+   */
+  initialPosition?: { x: number; y: number };
+
+  /**
+   * Whether the snake is initially paused.
+   * If not provided, it is false.
+   */
+  initialyPaused?: boolean;
+
+  /**
+   * A callback function that is called when the snake eats a food.
+   * If not provided, it is undefined.
+   * The `lastEatTime` is the time when the last food was eaten. Timestamp in milliseconds.
+   *
+   * **Note: Make sure to wrap the callback in _useCallback_ to avoid unnecessary re-renders.**
+   */
+  onFoodEaten?: (foodKind: FoodKind, lastEatTime: number) => void;
+
+  /**
+   * A callback function that is called when the game is over.
+   * If not provided, it is undefined.
+   *
+   * **Note: Make sure to wrap the callback in _useCallback_ to avoid unnecessary re-renders.**
+   */
+  onGameOver?: () => void;
+};
+
+const useSnake = (
+  columns: number,
+  rows: number,
+  options: UseSnakeOptions = {}
+) => {
+  const {
+    initialIntervalMs = 200 * (2000 / (columns * rows * 6)),
+    intervalReductionFactor = SPEED_REDUCTION_FACTOR,
+    initialDirection = "up",
+    initialPosition: { x: initialX, y: initialY } = {
       x: Math.floor(columns / 2),
       y: Math.floor(rows / 2),
-      next: "up",
-      last: "up",
+    },
+    initialyPaused = false,
+    onFoodEaten,
+    onGameOver,
+  } = options;
+
+  const [body, setBody] = useState<SnakeBody>([
+    {
+      x: initialX,
+      y: initialY,
+      next: initialDirection,
+      last: initialDirection,
       isHead: true,
       isTail: true,
     },
   ]);
-  const initSpeed = SPEED_START_MS * (2000 / (columns * rows * 6));
 
-  const directionRef = useRef<Direction>("up");
+  const directionRef = useRef<Direction>(initialDirection);
   const [speed, setSpeed] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(initialyPaused);
   const [gameOver, setGameOver] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [ms, setMs] = useState(initSpeed);
+  const [stepMs, setStepMs] = useState(initialIntervalMs);
+  const [lastEatTime, setLastEatTime] = useState(0);
 
   const isBodyCell = useCallback(
     (x: number, y: number) => body.some((cell) => cell.x === x && cell.y === y),
@@ -85,17 +154,20 @@ const useSnake = (columns: number, rows: number) => {
       isOutOfBounds(newHead.x, newHead.y) ||
       isBodyCell(newHead.x, newHead.y)
     ) {
-      setGameOver(true);
       setPaused(true);
+      setGameOver(true);
+      onGameOver?.();
       return;
     }
     // Check if the head is about to eat the food
     if (isFoodPosition(newHead.x, newHead.y)) {
       setFoodPosition(generateFoodPosition());
       setSpeed(speed + 1);
-      setMs(ms - ms * SPEED_REDUCTION_FACTOR);
+      setStepMs(stepMs - stepMs * intervalReductionFactor);
       grow = true;
       newHead.isTail = false;
+      onFoodEaten?.("apple", lastEatTime);
+      setLastEatTime(Date.now());
     }
     if (body.length === 1) {
       setBody(
@@ -157,9 +229,13 @@ const useSnake = (columns: number, rows: number) => {
     isOutOfBounds,
     isBodyCell,
     isFoodPosition,
+    onGameOver,
     generateFoodPosition,
     speed,
-    ms,
+    stepMs,
+    intervalReductionFactor,
+    onFoodEaten,
+    lastEatTime,
   ]);
 
   const reset = useCallback(() => {
@@ -177,8 +253,9 @@ const useSnake = (columns: number, rows: number) => {
       },
     ]);
     setSpeed(0);
-    setMs(initSpeed);
-  }, [columns, rows, generateFoodPosition, initSpeed]);
+    setStepMs(initialIntervalMs);
+    setLastEatTime(0);
+  }, [columns, rows, generateFoodPosition, initialIntervalMs]);
 
   // Initialize food position after mount to avoid hydration mismatch
   useEffect(() => {
@@ -190,9 +267,9 @@ const useSnake = (columns: number, rows: number) => {
 
   useEffect(() => {
     if (paused || !mounted) return;
-    const interval = setInterval(doStep, ms);
+    const interval = setInterval(doStep, stepMs);
     return () => clearInterval(interval);
-  }, [doStep, paused, mounted, ms]);
+  }, [doStep, paused, mounted, stepMs]);
 
   useEffect(() => {
     if (gameOver) return;
@@ -237,6 +314,13 @@ const useSnake = (columns: number, rows: number) => {
     setPaused(false);
   }, []);
 
+  useEffect(() => {
+    // If the game is started the very first time, start the eat counter
+    if (!paused && lastEatTime === 0) {
+      setLastEatTime(Date.now());
+    }
+  }, [paused, lastEatTime]);
+
   const getCell = useCallback(
     (x: number, y: number) => body.find((cell) => cell.x === x && cell.y === y),
     [body]
@@ -251,9 +335,8 @@ const useSnake = (columns: number, rows: number) => {
     pause,
     resume,
     paused,
-    gameOver,
     foodPosition,
-    ms,
+    stepMs,
     getCell,
   };
 };

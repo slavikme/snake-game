@@ -1,17 +1,80 @@
 "use client";
 
-import useSnake from "@/hooks/useSnake";
+import useSnake, { FoodKind, UseSnakeOptions } from "@/hooks/useSnake";
 import { cn } from "@/utils/cn";
-import { FC } from "react";
+import Image from "next/image";
+import { FC, useCallback, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 type GameBoardProps = {
-  columns: number;
-  rows: number;
+  columns?: number;
+  rows?: number;
+  options?: Pick<
+    UseSnakeOptions,
+    "initialIntervalMs" | "intervalReductionFactor"
+  >;
 };
 
-const GameBoard: FC<GameBoardProps> = ({ columns, rows }) => {
-  const { gameOver, reset, resume, foodPosition, speed, ms, getCell } =
-    useSnake(columns, rows);
+const DEFAULT_COLUMNS = 45;
+const DEFAULT_ROWS = 30;
+const DEFAULT_INITIAL_INTERVAL_MS = 150;
+const DEFAULT_INTERVAL_REDUCTION_FACTOR = 0.03;
+
+/** The maximum score for an apple. */
+const APPLE_MAX_SCORE = 10;
+/** The maximum time for an apple to be eaten in milliseconds. When it passes this time, the score is the minimum score. */
+const APPLE_MAX_MS = 10_000;
+/** The minimum score for an apple. */
+const APPLE_MIN_SCORE = 1;
+
+/**
+ * Calculate the score for an apple based on the time it was eaten.
+ * @param eatTime - The time it took to eat the apple in milliseconds.
+ * @returns The score for the apple.
+ */
+const calculateAppleScore = (eatTime: number) =>
+  Math.max(APPLE_MIN_SCORE, (1 - eatTime / APPLE_MAX_MS) * APPLE_MAX_SCORE);
+
+const GameBoard: FC<GameBoardProps> = ({
+  columns = DEFAULT_COLUMNS,
+  rows = DEFAULT_ROWS,
+  options = {},
+}) => {
+  const {
+    initialIntervalMs = DEFAULT_INITIAL_INTERVAL_MS,
+    intervalReductionFactor = DEFAULT_INTERVAL_REDUCTION_FACTOR,
+  } = options;
+
+  const [score, setScore] = useState(0);
+  const [topScore, setTopScore] = useLocalStorage("top-score", 0, {
+    initializeWithValue: false,
+  });
+  const [gameOver, setGameOver] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
+
+  const onFoodEaten = useCallback((foodKind: FoodKind, lastEatTime: number) => {
+    let value = 0;
+    const eatTime = Date.now() - lastEatTime;
+    if (foodKind === "apple") {
+      value = calculateAppleScore(eatTime);
+    }
+    setScore((prevScore) => prevScore + value);
+  }, []);
+
+  const onGameOver = useCallback(() => {
+    setTopScore((currentTopScore) => Math.max(currentTopScore, score));
+    setGameStarted(false);
+    setGameOver(true);
+  }, [score, setTopScore]);
+
+  const { reset, resume, foodPosition, speed, stepMs, getCell, paused } =
+    useSnake(columns, rows, {
+      initialyPaused: true,
+      initialIntervalMs,
+      intervalReductionFactor,
+      onFoodEaten,
+      onGameOver,
+    });
 
   const cells = Array.from({ length: columns * rows }, (_, index) => ({
     x: index % columns,
@@ -19,20 +82,38 @@ const GameBoard: FC<GameBoardProps> = ({ columns, rows }) => {
   }));
 
   return (
-    <div className="relative">
-      <ul className="flex gap-10">
+    <div className="flex flex-col gap-2">
+      <h1 className="text-2xl font-bold flex items-center gap-3">
+        <Image
+          src="/icon-96.png"
+          alt="Snake Game Icon"
+          width={40}
+          height={40}
+          className="inline-block"
+        />
+        Snake Game
+      </h1>
+      <p className="text-sm text-neutral-500">
+        Use the <strong>arrow keys</strong> to move the snake. Press the{" "}
+        <strong>spacebar</strong> to pause the game.
+      </p>
+      <ul className="flex gap-x-5 gap-y-1 px-2 py-1 bg-background rounded-lg flex-wrap">
         <li className="flex items-center gap-2">
           <span>Speed:</span>
-          <span>
+          <span className="whitespace-nowrap">
             {speed}{" "}
             <span className="text-xs text-neutral-500">
-              ({ms.toLocaleString()}ms)
+              ({stepMs.toFixed(0)}ms)
             </span>
           </span>
         </li>
         <li className="flex items-center gap-2">
           <span>Score:</span>
-          <span></span>
+          <span>{score.toFixed(0)}</span>
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="whitespace-nowrap">Top Score:</span>
+          <span>{topScore}</span>
         </li>
       </ul>
       <div
@@ -42,7 +123,7 @@ const GameBoard: FC<GameBoardProps> = ({ columns, rows }) => {
             "--rows": `repeat(${rows}, minmax(0, 1fr))`,
           } as React.CSSProperties
         }
-        className="w-full grid grid-cols-(--columns) grid-rows-(--rows) overflow-hidden"
+        className="relative w-full grid grid-cols-(--columns) grid-rows-(--rows) overflow-hidden bg-background rounded-lg"
       >
         {cells.map((cell) => {
           const s = getCell(cell.x, cell.y);
@@ -89,16 +170,20 @@ const GameBoard: FC<GameBoardProps> = ({ columns, rows }) => {
                     (s.last === "left" &&
                       (s.next === "up" || s.next === "left")) ||
                     (s.last === "up" && s.isTail),
-                  "rounded-bl-[1px] rounded-tr-[100%] [corner-shape:round_round_round_scoop]":
+                  // if the border is more than 1px add "[corner-bottom-left-shape:scoop]" - there is a bug with corner-shape property with 1px border in webkit
+                  "rounded-bl-[1px] rounded-tr-[100%]":
                     (s.last === "up" && s.next === "left") ||
                     (s.last === "right" && s.next === "down"),
-                  "rounded-br-[1px] rounded-tl-[100%] [corner-shape:round_round_scoop_round]":
+                  // if the border is more than 1px add "[corner-bottom-right-shape:scoop]" - there is a bug with corner-shape property with 1px border in webkit
+                  "rounded-br-[1px] rounded-tl-[100%]":
                     (s.last === "up" && s.next === "right") ||
                     (s.last === "left" && s.next === "down"),
-                  "rounded-tl-[1px] rounded-br-[100%] [corner-shape:scoop_round_round_round]":
+                  // if the border is more than 1px add "[corner-top-left-shape:scoop]" - there is a bug with corner-shape property with 1px border in webkit
+                  "rounded-tl-[1px] rounded-br-[100%]":
                     (s.last === "down" && s.next === "left") ||
                     (s.last === "right" && s.next === "up"),
-                  "rounded-tr-[1px] rounded-bl-[100%] [corner-shape:round_scoop_round_round]":
+                  // if the border is more than 1px add "[corner-top-right-shape:scoop]" - there is a bug with corner-shape property with 1px border in webkit
+                  "rounded-tr-[1px] rounded-bl-[100%]":
                     (s.last === "down" && s.next === "right") ||
                     (s.last === "left" && s.next === "up"),
                   "rounded-bl-[100%]":
@@ -118,23 +203,44 @@ const GameBoard: FC<GameBoardProps> = ({ columns, rows }) => {
             />
           );
         })}
+        {gameOver && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 z-50">
+            <div className="text-2xl font-bold">Game Over</div>
+            <div className="text-sm text-neutral-500">
+              Your score: {score.toFixed(0)}
+            </div>
+            <button
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
+              onClick={() => {
+                reset();
+                setGameOver(false);
+                resume();
+              }}
+              tabIndex={0}
+              autoFocus={true}
+            >
+              Play Again
+            </button>
+          </div>
+        )}
+        {paused && !gameOver && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 z-50">
+            <div className="text-2xl font-bold">
+              {gameStarted ? "Paused" : "Ready to play?"}
+            </div>
+            <button
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
+              onClick={() => {
+                resume();
+              }}
+              tabIndex={0}
+              autoFocus={true}
+            >
+              {gameStarted ? "Resume" : "Start"}
+            </button>
+          </div>
+        )}
       </div>
-      {gameOver && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 z-50">
-          <div className="text-2xl font-bold">Game Over</div>
-          <button
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
-            onClick={() => {
-              reset();
-              resume();
-            }}
-            tabIndex={0}
-            autoFocus={true}
-          >
-            Play Again
-          </button>
-        </div>
-      )}
     </div>
   );
 };

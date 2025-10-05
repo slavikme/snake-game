@@ -1,33 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🐍 Snake Game
 
-## Getting Started
+A classic Snake game built with Next.js, TypeScript, and Tailwind CSS. Play the nostalgic retro game right in your browser!
 
-First, run the development server:
+## 🎮 Features
+
+- Classic snake gameplay
+- Responsive design
+- Progressive Web App (PWA) support
+- Works offline
+- Installable on all platforms (Chrome, iOS, Android, macOS, Windows)
+- Modern UI with smooth animations
+- Touch and keyboard controls
+
+## 🚀 Getting Started
+
+First, install the dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to play the game.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📱 Progressive Web App (PWA)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This app is configured as a Progressive Web App and can be installed on:
 
-## Learn More
+### Chrome (Desktop & Android)
 
-To learn more about Next.js, take a look at the following resources:
+1. Visit the website
+2. Click the install icon in the address bar
+3. Or go to Menu → Install Snake Game
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### iOS (Safari)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Visit the website
+2. Tap the Share button
+3. Scroll down and tap "Add to Home Screen"
+4. Tap "Add"
+
+### macOS (Safari/Chrome)
+
+1. Visit the website
+2. In Safari: File → Add to Dock
+3. In Chrome: Click the install icon in the address bar
+
+### Windows
+
+1. Visit the website in Chrome or Edge
+2. Click the install icon in the address bar
+3. Or go to Menu → Apps → Install Snake Game
+
+The app will work offline after the first visit!
+
+## 🎯 How to Play
+
+- Use arrow keys (↑ ↓ ← →) to control the snake
+- Eat the food to grow longer
+- Avoid hitting the walls or yourself
+- Try to get the highest score!
+
+## 🛠️ Built With
+
+- [Next.js](https://nextjs.org) - React framework
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [React Hooks](https://react.dev/reference/react) - State management
+
+## 📄 License
+
+Copyright © 2025 - Slavik Meltser
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
 
 ## Deploy on Vercel
 

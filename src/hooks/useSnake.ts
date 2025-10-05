@@ -106,6 +106,7 @@ const useSnake = (
   const [mounted, setMounted] = useState(false);
   const [stepMs, setStepMs] = useState(initialIntervalMs);
   const [lastEatTime, setLastEatTime] = useState(0);
+  const [arrowKeyPressCount, setArrowKeyPressCount] = useState(0);
 
   const isBodyCell = useCallback(
     (x: number, y: number) => body.some((cell) => cell.x === x && cell.y === y),
@@ -269,39 +270,41 @@ const useSnake = (
     if (paused || !mounted) return;
     const interval = setInterval(doStep, stepMs);
     return () => clearInterval(interval);
-  }, [doStep, paused, mounted, stepMs]);
+  }, [doStep, paused, mounted, stepMs, arrowKeyPressCount]);
 
   useEffect(() => {
     if (gameOver) return;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowUp" && directionRef.current !== "down") {
+      const dr = directionRef;
+      const arrowKeyPostHandler = () => {
         event.preventDefault();
-        directionRef.current = "up";
-      } else if (event.key === "ArrowDown" && directionRef.current !== "up") {
-        event.preventDefault();
-        directionRef.current = "down";
-      } else if (
-        event.key === "ArrowLeft" &&
-        directionRef.current !== "right"
-      ) {
-        event.preventDefault();
-        directionRef.current = "left";
-      } else if (
-        event.key === "ArrowRight" &&
-        directionRef.current !== "left"
-      ) {
-        event.preventDefault();
-        directionRef.current = "right";
+        event.stopImmediatePropagation();
+        doStep();
+        setArrowKeyPressCount((prev) => prev + 1);
+      };
+      if (event.key === "ArrowUp" && dr.current !== "down") {
+        dr.current = "up";
+        arrowKeyPostHandler();
+      } else if (event.key === "ArrowDown" && dr.current !== "up") {
+        dr.current = "down";
+        arrowKeyPostHandler();
+      } else if (event.key === "ArrowLeft" && dr.current !== "right") {
+        dr.current = "left";
+        arrowKeyPostHandler();
+      } else if (event.key === "ArrowRight" && dr.current !== "left") {
+        dr.current = "right";
+        arrowKeyPostHandler();
       } else if (event.key === " ") {
-        event.preventDefault();
         setPaused((prev) => !prev);
+        event.preventDefault();
+        event.stopImmediatePropagation();
       }
     };
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown, { capture: true });
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown, { capture: true });
     };
-  }, [gameOver]);
+  }, [doStep, gameOver]);
 
   const setDirection = useCallback((direction: Direction) => {
     directionRef.current = direction;

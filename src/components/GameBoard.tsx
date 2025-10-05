@@ -17,7 +17,7 @@ type GameBoardProps = {
 
 const DEFAULT_COLUMNS = 45;
 const DEFAULT_ROWS = 30;
-const DEFAULT_INITIAL_INTERVAL_MS = 150;
+const DEFAULT_INITIAL_INTERVAL_MS = 200;
 const DEFAULT_INTERVAL_REDUCTION_FACTOR = 0.03;
 
 /** The maximum score for an apple. */
@@ -123,7 +123,7 @@ const GameBoard: FC<GameBoardProps> = ({
             "--rows": `repeat(${rows}, minmax(0, 1fr))`,
           } as React.CSSProperties
         }
-        className="relative w-full grid grid-cols-(--columns) grid-rows-(--rows) overflow-hidden bg-background rounded-lg"
+        className="relative w-full gap-[1px] grid grid-cols-(--columns) grid-rows-(--rows) overflow-hidden bg-background rounded-lg"
       >
         {cells.map((cell) => {
           const s = getCell(cell.x, cell.y);
@@ -215,6 +215,8 @@ const GameBoard: FC<GameBoardProps> = ({
                 reset();
                 setGameOver(false);
                 resume();
+                setScore(0);
+                setGameStarted(true);
               }}
               tabIndex={0}
               autoFocus={true}
@@ -232,6 +234,7 @@ const GameBoard: FC<GameBoardProps> = ({
               className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
               onClick={() => {
                 resume();
+                setGameStarted(true);
               }}
               tabIndex={0}
               autoFocus={true}

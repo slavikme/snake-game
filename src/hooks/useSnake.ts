@@ -275,38 +275,48 @@ const useSnake = (
   }, [doStep, paused, mounted, stepMs, arrowKeyPressCount]);
 
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver || paused) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       const dr = directionRef;
-      const arrowKeyPostHandler = () => {
+      const gameEventsLock = () => {
         event.preventDefault();
         event.stopImmediatePropagation();
+      };
+      const handleArrowKey = (direction: Direction) => {
+        dr.current = direction;
         doStep();
         setArrowKeyPressCount((prev) => prev + 1);
       };
-      if (event.key === "ArrowUp" && dr.current !== "down") {
-        dr.current = "up";
-        arrowKeyPostHandler();
-      } else if (event.key === "ArrowDown" && dr.current !== "up") {
-        dr.current = "down";
-        arrowKeyPostHandler();
-      } else if (event.key === "ArrowLeft" && dr.current !== "right") {
-        dr.current = "left";
-        arrowKeyPostHandler();
-      } else if (event.key === "ArrowRight" && dr.current !== "left") {
-        dr.current = "right";
-        arrowKeyPostHandler();
+      if (event.key === "ArrowUp") {
+        gameEventsLock();
+        if (dr.current !== "down") {
+          handleArrowKey("up");
+        }
+      } else if (event.key === "ArrowDown") {
+        gameEventsLock();
+        if (dr.current !== "up") {
+          handleArrowKey("down");
+        }
+      } else if (event.key === "ArrowLeft") {
+        gameEventsLock();
+        if (dr.current !== "right") {
+          handleArrowKey("left");
+        }
+      } else if (event.key === "ArrowRight") {
+        gameEventsLock();
+        if (dr.current !== "left") {
+          handleArrowKey("right");
+        }
       } else if (event.key === " ") {
+        gameEventsLock();
         setPaused((prev) => !prev);
-        event.preventDefault();
-        event.stopImmediatePropagation();
       }
     };
     document.addEventListener("keydown", handleKeyDown, { capture: true });
     return () => {
       document.removeEventListener("keydown", handleKeyDown, { capture: true });
     };
-  }, [doStep, gameOver]);
+  }, [doStep, gameOver, paused]);
 
   const setDirection = useCallback((direction: Direction) => {
     directionRef.current = direction;

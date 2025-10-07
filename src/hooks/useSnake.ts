@@ -64,10 +64,12 @@ export type UseSnakeOptions = {
   /**
    * A callback function that is called when the game is over.
    * If not provided, it is undefined.
+   * The `speed` is the speed of the snake.
+   * The `stepMs` is the step time of the snake.
    *
    * **Note: Make sure to wrap the callback in _useCallback_ to avoid unnecessary re-renders.**
    */
-  onGameOver?: () => void;
+  onGameOver?: ({ speed, stepMs }: { speed: number; stepMs: number }) => void;
 };
 
 const useSnake = (
@@ -157,7 +159,7 @@ const useSnake = (
     ) {
       setPaused(true);
       setGameOver(true);
-      onGameOver?.();
+      onGameOver?.({ speed, stepMs });
       return;
     }
     // Check if the head is about to eat the food

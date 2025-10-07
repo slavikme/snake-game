@@ -1,10 +1,11 @@
 "use client";
 
 import useSnake, { FoodKind, UseSnakeOptions } from "@/hooks/useSnake";
-import { cn } from "@/utils/cn";
-import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { FC, useCallback, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
+import { saveScore } from "@/lib/actions/scores";
+import type { User } from "@/lib/db/schema";
 
 type GameBoardProps = {
   columns?: number;
@@ -13,6 +14,7 @@ type GameBoardProps = {
     UseSnakeOptions,
     "initialIntervalMs" | "intervalReductionFactor"
   >;
+  onScoreSaved?: () => void;
 };
 
 const DEFAULT_COLUMNS = 45;
@@ -39,6 +41,7 @@ const GameBoard: FC<GameBoardProps> = ({
   columns = DEFAULT_COLUMNS,
   rows = DEFAULT_ROWS,
   options = {},
+  onScoreSaved,
 }) => {
   const {
     initialIntervalMs = DEFAULT_INITIAL_INTERVAL_MS,
@@ -51,21 +54,20 @@ const GameBoard: FC<GameBoardProps> = ({
   });
   const [gameOver, setGameOver] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
+  const [user] = useLocalStorage<User | null>("user", null, {
+    initializeWithValue: false,
+  });
+  const [applesEaten, setApplesEaten] = useState(0);
 
   const onFoodEaten = useCallback((foodKind: FoodKind, lastEatTime: number) => {
     let value = 0;
     const eatTime = Date.now() - lastEatTime;
     if (foodKind === "apple") {
       value = calculateAppleScore(eatTime);
+      setApplesEaten((prev) => prev + 1);
     }
     setScore((prevScore) => prevScore + value);
   }, []);
-
-  const onGameOver = useCallback(() => {
-    setTopScore((currentTopScore) => Math.max(currentTopScore, score));
-    setGameStarted(false);
-    setGameOver(true);
-  }, [score, setTopScore]);
 
   const { reset, resume, foodPosition, speed, stepMs, getCell, paused } =
     useSnake(columns, rows, {
@@ -73,7 +75,35 @@ const GameBoard: FC<GameBoardProps> = ({
       initialIntervalMs,
       intervalReductionFactor,
       onFoodEaten,
-      onGameOver,
+      onGameOver: useCallback(
+        async ({ speed, stepMs }: { speed: number; stepMs: number }) => {
+          setTopScore((currentTopScore) => Math.max(currentTopScore, score));
+          setGameStarted(false);
+          setGameOver(true);
+
+          // Save score to database if user is authenticated
+          if (user?.id && score > 0) {
+            try {
+              const result = await saveScore(user.id, {
+                score,
+                level: speed,
+                speedMs: Math.round(stepMs),
+                apples: applesEaten,
+              });
+
+              if (!result.success) {
+                console.error("Failed to save score:", result.error);
+              } else {
+                // Notify parent component that score was saved
+                onScoreSaved?.();
+              }
+            } catch (error) {
+              console.error("Error saving score:", error);
+            }
+          }
+        },
+        [score, setTopScore, user, applesEaten, onScoreSaved]
+      ),
     });
 
   const cells = Array.from({ length: columns * rows }, (_, index) => ({
@@ -83,20 +113,6 @@ const GameBoard: FC<GameBoardProps> = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="text-2xl font-bold flex items-center gap-3">
-        <Image
-          src="/icon-96.png"
-          alt="Snake Game Icon"
-          width={40}
-          height={40}
-          className="inline-block"
-        />
-        Snake Game
-      </h1>
-      <p className="text-sm text-neutral-500">
-        Use the <strong>arrow keys</strong> to move the snake. Press the{" "}
-        <strong>spacebar</strong> to pause the game.
-      </p>
       <ul className="flex gap-x-5 gap-y-1 px-2 py-1 bg-background rounded-lg flex-wrap">
         <li className="flex items-center gap-2">
           <span>Speed:</span>
@@ -216,6 +232,7 @@ const GameBoard: FC<GameBoardProps> = ({
                 setGameOver(false);
                 resume();
                 setScore(0);
+                setApplesEaten(0);
                 setGameStarted(true);
               }}
               tabIndex={0}

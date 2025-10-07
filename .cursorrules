@@ -1,0 +1,132 @@
+# Snake Game - AI Coding Rules
+
+## UI Components
+
+- **Prioritize shadcn/ui components**: Always use existing shadcn/ui components from `src/components/ui/` when available
+- **Custom components**: If a shadcn component doesn't exist, implement one using Radix UI primitives to match shadcn's style and API
+- **Consistency**: Maintain the same design patterns, prop interfaces, and styling approach as existing shadcn components
+- **Tailwind CSS**: Use Tailwind utility classes for styling, following the project's design system
+
+## React Best Practices
+
+- **Avoid useEffect**: Minimize or eliminate `useEffect` usage where possible
+  - Prefer derived state and calculations during render
+  - Use event handlers for user interactions
+  - Consider React Server Components for data fetching
+  - Use libraries like `react-query` for data synchronization if needed
+- **Arrow functions**: Always use arrow function syntax instead of classic function declarations
+
+  ```typescript
+  // ✅ Good
+  const MyComponent = () => { ... }
+  const handleClick = () => { ... }
+
+  // ❌ Avoid
+  function MyComponent() { ... }
+  function handleClick() { ... }
+  ```
+
+## TypeScript
+
+- **Type safety**: Always use proper TypeScript types, avoid `any`
+- **Types over interface**: Prefer `type` over `interface` for all cases
+- **Explicit return types**: Define return types for functions and components when not obvious
+- **Strict mode**: Maintain strict TypeScript configuration
+
+## Code Organization
+
+- **File structure**: Follow the existing project structure
+  - Components in `src/components/`
+  - UI primitives in `src/components/ui/`
+  - Hooks in `src/hooks/`
+  - Server actions in `src/lib/actions/`
+  - Database queries in `src/lib/db/`
+  - Contexts in `src/contexts/`
+- **Naming conventions**:
+  - Components: PascalCase (e.g., `GameBoard.tsx`)
+  - Hooks: camelCase with `use` prefix (e.g., `useSnake.ts`)
+  - Utilities: camelCase (e.g., `utils.ts`)
+  - Server actions: camelCase (e.g., `auth.ts`)
+
+## Next.js App Router
+
+- **Server Components by default**: Use React Server Components unless client interactivity is needed
+- **'use client' directive**: Only add when necessary (state, effects, browser APIs, event handlers)
+- **Server Actions**: Use for mutations and form submissions
+- **Route groups**: Use parentheses for layout grouping without affecting URL structure (e.g., `(authenticated)`)
+- **Metadata**: Define metadata exports for SEO
+
+## Database & Data Fetching
+
+- **Drizzle ORM**: Use Drizzle for all database operations
+- **Server-side queries**: Keep database queries in server components or server actions
+- **Supabase**: Use Supabase client for real-time features and authentication
+- **Query organization**: Keep reusable queries in `src/lib/db/queries.ts`
+
+## Authentication
+
+- **Supabase Auth**: Use Supabase for authentication
+- **Auth guards**: Use `AuthGuard` component for protected routes
+- **Server-side checks**: Verify authentication in server components and actions
+- **Middleware**: Use Next.js middleware for route protection
+
+## State Management
+
+- **Context**: Use React Context for global state (e.g., `GameContext`)
+- **Local state**: Prefer `useState` for component-local state
+- **Derived state**: Calculate values during render instead of storing in state
+- **URL state**: Use search params for shareable/bookmarkable state
+
+## Styling
+
+- **Tailwind CSS**: Use Tailwind utility classes
+- **CSS variables**: Use CSS custom properties for theme values
+- **Dark mode**: Support dark mode using Tailwind's dark mode utilities
+- **Responsive design**: Mobile-first approach with responsive utilities
+
+## Performance
+
+- **Memoization**: Use `useMemo` and `useCallback` only when necessary (avoid premature optimization)
+- **Code splitting**: Use dynamic imports for heavy components
+- **Image optimization**: Use Next.js `Image` component
+- **Bundle size**: Be mindful of dependencies
+
+## Error Handling
+
+- **Try-catch**: Wrap async operations in try-catch blocks
+- **Error boundaries**: Use error boundaries for component error handling
+- **User feedback**: Provide clear error messages to users
+- **Logging**: Log errors appropriately for debugging
+
+## Accessibility
+
+- **Semantic HTML**: Use appropriate HTML elements
+- **ARIA labels**: Add ARIA attributes when necessary
+- **Keyboard navigation**: Ensure keyboard accessibility
+- **Focus management**: Handle focus states properly
+
+## Code Quality
+
+- **ESLint**: Follow ESLint rules configured in the project
+- **Consistent formatting**: Maintain consistent code style
+- **Comments**: Add comments for complex logic, avoid obvious comments
+- **DRY principle**: Don't repeat yourself, extract reusable logic
+- **Single responsibility**: Keep functions and components focused
+
+## Git & Commits
+
+- **Meaningful commits**: Write clear, descriptive commit messages
+- **Small commits**: Commit logical units of work
+- **No commented code**: Remove commented-out code before committing
+
+## Testing
+
+- **Test critical paths**: Focus on user-facing functionality
+- **Integration over unit**: Prefer integration tests for better confidence
+- **Accessibility testing**: Test with screen readers and keyboard navigation
+
+## Documentation
+
+- **README updates**: Keep README.md up to date
+- **JSDoc comments**: Add JSDoc for complex functions and public APIs
+- **Type documentation**: Use TypeScript types as documentation

@@ -72,17 +72,20 @@ export const registerUser = async (
  * Get leaderboard with top scores
  * @param limit - Maximum number of scores to retrieve (default: 100)
  * @param userId - Optional user ID to filter scores by specific user
+ * @param offset - Number of scores to skip (default: 0)
  */
 export const getLeaderboard = async (
   limit: number = 100,
-  userId?: string
+  userId?: string,
+  offset: number = 0
 ): Promise<(Score & { user: User })[]> => {
   const baseQuery = db
     .select()
     .from(scores)
     .innerJoin(users, eq(scores.userId, users.id))
     .orderBy(desc(scores.score))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
   const result = userId
     ? await baseQuery.where(eq(scores.userId, userId))

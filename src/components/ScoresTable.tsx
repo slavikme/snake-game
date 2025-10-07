@@ -19,11 +19,14 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import type { Score, User } from "@/lib/db/schema";
+import Link from "next/link";
 
 type ScoresTableProps = {
   scores: (Score & { user: User })[];
   loading?: boolean;
   error?: string | null;
+  showMoreLink?: boolean;
+  onShowMoreClick?: () => void;
 };
 
 const getRank = (index: number) => {
@@ -43,6 +46,8 @@ const ScoresTable = ({
   scores,
   loading = false,
   error = null,
+  showMoreLink = false,
+  onShowMoreClick,
 }: ScoresTableProps) => {
   const [selectedScore, setSelectedScore] = useState<
     (Score & { user: User }) | null
@@ -127,6 +132,23 @@ const ScoresTable = ({
           ))}
         </TableBody>
       </Table>
+
+      {showMoreLink && (
+        <div className="flex justify-center mt-4">
+          <Link
+            href="/scores"
+            onClick={(e) => {
+              if (onShowMoreClick) {
+                e.preventDefault();
+                onShowMoreClick();
+              }
+            }}
+            className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
+          >
+            Show More
+          </Link>
+        </div>
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">

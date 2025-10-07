@@ -2,10 +2,11 @@
 
 import useSnake, { FoodKind, UseSnakeOptions } from "@/hooks/useSnake";
 import { cn } from "@/lib/utils";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useState, useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { saveScore } from "@/lib/actions/scores";
 import type { User } from "@/lib/db/schema";
+import { useGame } from "@/contexts/game-context";
 
 type GameBoardProps = {
   columns?: number;
@@ -48,6 +49,7 @@ const GameBoard: FC<GameBoardProps> = ({
     intervalReductionFactor = DEFAULT_INTERVAL_REDUCTION_FACTOR,
   } = options;
 
+  const { setIsGameInProgress } = useGame();
   const [score, setScore] = useState(0);
   const [topScore, setTopScore] = useLocalStorage("top-score", 0, {
     initializeWithValue: false,
@@ -80,6 +82,7 @@ const GameBoard: FC<GameBoardProps> = ({
           setTopScore((currentTopScore) => Math.max(currentTopScore, score));
           setGameStarted(false);
           setGameOver(true);
+          setIsGameInProgress(false);
 
           // Save score to database if user is authenticated
           if (user?.id && score > 0) {
@@ -102,9 +105,21 @@ const GameBoard: FC<GameBoardProps> = ({
             }
           }
         },
-        [score, setTopScore, user, applesEaten, onScoreSaved]
+        [
+          score,
+          setTopScore,
+          user,
+          applesEaten,
+          onScoreSaved,
+          setIsGameInProgress,
+        ]
       ),
     });
+
+  // Update game in progress state when game starts/pauses
+  useEffect(() => {
+    setIsGameInProgress(gameStarted && !paused && !gameOver);
+  }, [gameStarted, paused, gameOver, setIsGameInProgress]);
 
   const cells = Array.from({ length: columns * rows }, (_, index) => ({
     x: index % columns,

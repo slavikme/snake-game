@@ -66,12 +66,14 @@ type GetLeaderboardResult =
   | {
       success: true;
       scores: (Score & { user: User })[];
+      hasMore: boolean;
       error?: never;
     }
   | {
       success: false;
       error: string;
       scores?: never;
+      hasMore?: never;
     };
 
 export const getLeaderboard = async (
@@ -88,9 +90,60 @@ export const getLeaderboard = async (
 
     const leaderboardScores = await getLeaderboardQuery(limit, userId);
 
-    return { success: true, scores: leaderboardScores };
+    return { success: true, scores: leaderboardScores, hasMore: false };
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
+    return { success: false, error: "Failed to fetch leaderboard" };
+  }
+};
+
+type GetPaginatedLeaderboardResult =
+  | {
+      success: true;
+      scores: (Score & { user: User })[];
+      hasMore: boolean;
+      error?: never;
+    }
+  | {
+      success: false;
+      error: string;
+      scores?: never;
+      hasMore?: never;
+    };
+
+export const getPaginatedLeaderboard = async (
+  offset: number = 0,
+  limit: number = 20
+): Promise<GetPaginatedLeaderboardResult> => {
+  try {
+    if (limit <= 0 || limit > 100) {
+      return {
+        success: false,
+        error: "Invalid limit. Must be between 1 and 100",
+      };
+    }
+
+    if (offset < 0) {
+      return {
+        success: false,
+        error: "Invalid offset. Must be non-negative",
+      };
+    }
+
+    // Fetch one more than requested to check if there are more results
+    const leaderboardScores = await getLeaderboardQuery(
+      limit + 1,
+      undefined,
+      offset
+    );
+    const hasMore = leaderboardScores.length > limit;
+    const scores = hasMore
+      ? leaderboardScores.slice(0, limit)
+      : leaderboardScores;
+
+    return { success: true, scores, hasMore };
+  } catch (error) {
+    console.error("Error fetching paginated leaderboard:", error);
     return { success: false, error: "Failed to fetch leaderboard" };
   }
 };

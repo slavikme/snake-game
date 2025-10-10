@@ -1,9 +1,10 @@
 "use client";
 
 import GameBoard from "@/components/GameBoard";
+import GameBoardPhaser from "@/components/GameBoardPhaser";
 import { AuthGuard } from "@/components/auth-guard";
 import { Score, User } from "@/lib/db/schema";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ScoresTable from "@/components/ScoresTable";
 import { useEffect, useState, useCallback } from "react";
 import { getLeaderboard } from "@/lib/actions/scores";
@@ -20,7 +21,11 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isGameInProgress } = useGame();
+
+  // Check if phaser URL param is present
+  const isPhaserMode = searchParams.get("phaser") !== null;
 
   const [scores, setScores] = useState<(Score & { user: User })[]>([]);
   const [scoresLoading, setScoresLoading] = useState(true);
@@ -73,22 +78,35 @@ export default function Home() {
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <div className="w-250 max-w-screen p-3 flex flex-col gap-8">
           <div className="flex flex-col gap-2 w-full">
-            <p className="text-sm text-neutral-500">
-              Use the <strong>arrow keys</strong> to move the snake. Press the{" "}
-              <strong>spacebar</strong> to pause the game.
-            </p>
-            <GameBoard onScoreSaved={handleScoreSaved} />
+            {isPhaserMode ? (
+              <>
+                <p className="text-sm text-neutral-500">
+                  Phaser Game Mode - Use the controls as defined in the game.
+                </p>
+                <GameBoardPhaser />
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-neutral-500">
+                  Use the <strong>arrow keys</strong> to move the snake. Press
+                  the <strong>spacebar</strong> to pause the game.
+                </p>
+                <GameBoard onScoreSaved={handleScoreSaved} />
+              </>
+            )}
           </div>
-          <div className="flex flex-col gap-2 w-full">
-            <h2 className="text-lg font-bold">Top 10 Scores</h2>
-            <ScoresTable
-              scores={scores}
-              loading={scoresLoading}
-              error={scoresError}
-              showMoreLink={true}
-              onShowMoreClick={handleShowMoreClick}
-            />
-          </div>
+          {!isPhaserMode && (
+            <div className="flex flex-col gap-2 w-full">
+              <h2 className="text-lg font-bold">Top 10 Scores</h2>
+              <ScoresTable
+                scores={scores}
+                loading={scoresLoading}
+                error={scoresError}
+                showMoreLink={true}
+                onShowMoreClick={handleShowMoreClick}
+              />
+            </div>
+          )}
         </div>
       </main>
 

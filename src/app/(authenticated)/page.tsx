@@ -6,7 +6,7 @@ import { AuthGuard } from "@/components/auth-guard";
 import { Score, User } from "@/lib/db/schema";
 import { useRouter, useSearchParams } from "next/navigation";
 import ScoresTable from "@/components/ScoresTable";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { getLeaderboard } from "@/lib/actions/scores";
 import { useGame } from "@/contexts/game-context";
 import {
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-export default function Home() {
+const HomeContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isGameInProgress } = useGame();
@@ -131,5 +131,19 @@ export default function Home() {
         </DialogContent>
       </Dialog>
     </AuthGuard>
+  );
+};
+
+export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center min-h-screen">
+          Loading...
+        </div>
+      }
+    >
+      <HomeContent />
+    </Suspense>
   );
 }

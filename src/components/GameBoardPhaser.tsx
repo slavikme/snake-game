@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Phaser from "phaser";
+import type Phaser from "phaser";
 
 const GameBoardPhaser = () => {
   const gameContainerRef = useRef<HTMLDivElement>(null);
@@ -23,6 +23,10 @@ const GameBoardPhaser = () => {
     // Load Phaser and initialize game
     const loadAndInitGame = async () => {
       try {
+        // Dynamically import Phaser
+        const PhaserModule = await import("phaser");
+        const PhaserLib = PhaserModule.default;
+
         // Import the scenes
         const { Boot } = await import("@/phaser/scenes/Boot");
         const { Preloader } = await import("@/phaser/scenes/Preloader");
@@ -43,20 +47,20 @@ const GameBoardPhaser = () => {
 
         // Initialize Phaser game
         const config = {
-          type: Phaser.AUTO,
+          type: PhaserLib.AUTO,
           width: 1024,
           height: 768,
           parent: gameContainerRef.current,
           backgroundColor: "#028af8",
           scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.NO_CENTER,
+            mode: PhaserLib.Scale.FIT,
+            autoCenter: PhaserLib.Scale.NO_CENTER,
           },
           scene: [Boot, Preloader, Game],
         };
 
         console.log("Initializing Phaser game...");
-        gameInstanceRef.current = new Phaser.Game(config);
+        gameInstanceRef.current = new PhaserLib.Game(config);
         console.log("Phaser game initialized successfully");
       } catch (error) {
         console.error("Failed to load Phaser game:", error);

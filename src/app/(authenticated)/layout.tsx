@@ -46,7 +46,7 @@ export default function AuthenticatedLayout({
 
   return (
     <GameProvider>
-      <div className="relative font-sans flex flex-col items-center justify-between min-h-screen bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 from-slate-100 via-slate-200 to-slate-100">
+      <div className="relative font-sans flex flex-col items-center gap-4 justify-between min-h-screen bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 from-slate-100 via-slate-200 to-slate-100">
         <header className="flex gap-2 justify-between w-full p-3">
           <h1 className="text-2xl font-bold flex gap-3 items-center">
             <Image
@@ -105,7 +105,7 @@ export default function AuthenticatedLayout({
           )}
         </header>
 
-        {children}
+        <div>{children}</div>
 
         <footer className="flex flex-row gap-5 items-center justify-center p-3">
           <small>Copyright © 2025 - Slavik Meltser</small>

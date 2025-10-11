@@ -127,7 +127,7 @@ const GameBoard: FC<GameBoardProps> = ({
   }));
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 h-192 max-h-screen">
       <ul className="flex gap-x-5 gap-y-1 px-2 py-1 bg-background rounded-lg flex-wrap">
         <li className="flex items-center gap-2">
           <span>Speed:</span>

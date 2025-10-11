@@ -51,13 +51,13 @@ const GameBoardPhaser = () => {
           width: 1024,
           height: 768,
           parent: gameContainerRef.current,
-          backgroundColor: "#028af8",
+          backgroundColor: "#000000",
           scale: {
             mode: PhaserLib.Scale.FIT,
-            autoCenter: PhaserLib.Scale.NO_CENTER,
+            autoCenter: PhaserLib.Scale.CENTER_BOTH,
           },
           scene: [Boot, Preloader, Game],
-        };
+        } satisfies Phaser.Types.Core.GameConfig;
 
         console.log("Initializing Phaser game...");
         gameInstanceRef.current = new PhaserLib.Game(config);
@@ -81,11 +81,11 @@ const GameBoardPhaser = () => {
   }, []);
 
   return (
-    <div className="w-full flex justify-center overflow-hidden aspect-[1024/768]">
+    <div className="w-full flex justify-center h-192 max-h-screen">
       <div
         ref={gameContainerRef}
         id="phaser-game-container"
-        className="w-full h-full relative"
+        className="relative w-full h-full"
       />
     </div>
   );

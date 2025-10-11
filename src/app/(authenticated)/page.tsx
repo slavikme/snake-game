@@ -76,8 +76,8 @@ const HomeContent = () => {
   return (
     <AuthGuard requireAuth={true}>
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <div className="w-250 max-w-screen p-3 flex flex-col gap-8">
-          <div className="flex flex-col gap-2 w-full">
+        <div className="w-256 max-w-screen p-3 flex flex-col gap-8">
+          <div className="flex flex-col gap-2 w-full h-full">
             {isPhaserMode ? (
               <>
                 <p className="text-sm text-neutral-500">
@@ -95,18 +95,16 @@ const HomeContent = () => {
               </>
             )}
           </div>
-          {!isPhaserMode && (
-            <div className="flex flex-col gap-2 w-full">
-              <h2 className="text-lg font-bold">Top 10 Scores</h2>
-              <ScoresTable
-                scores={scores}
-                loading={scoresLoading}
-                error={scoresError}
-                showMoreLink={true}
-                onShowMoreClick={handleShowMoreClick}
-              />
-            </div>
-          )}
+          <div className="flex flex-col gap-2 w-full">
+            <h2 className="text-lg font-bold">Top 10 Scores</h2>
+            <ScoresTable
+              scores={scores}
+              loading={scoresLoading}
+              error={scoresError}
+              showMoreLink={true}
+              onShowMoreClick={handleShowMoreClick}
+            />
+          </div>
         </div>
       </main>
 

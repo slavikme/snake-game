@@ -14,17 +14,9 @@ export class Game extends Phaser.Scene {
   private snakeSpeed: number = 150;
   private lastMoveTime: number = 0;
   private isGameOver: boolean = false;
-  private tutorialText!: Phaser.GameObjects.Text;
+  private startLayer!: Phaser.GameObjects.Container;
   private stats: Phaser.GameObjects.Text | undefined;
   private cursorsKeyboard: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
-  private cursorsJoystick:
-    | {
-        up: Phaser.Input.Keyboard.Key;
-        down: Phaser.Input.Keyboard.Key;
-        left: Phaser.Input.Keyboard.Key;
-        right: Phaser.Input.Keyboard.Key;
-      }
-    | undefined;
   private frameTimestamps: number[] = [];
   private calculatedFps: number = 0;
   private controlKeys: {
@@ -33,11 +25,10 @@ export class Game extends Phaser.Scene {
     opposite: string;
     isHandled: boolean;
   }[] = [];
-  private shiftKey: Phaser.Input.Keyboard.Key | undefined;
   private isPaused: boolean = false;
   private isStarted: boolean = false;
-  private joystick: VirtualJoystick | undefined;
   private isSprintEnabled: boolean = false;
+  private joystick: VirtualJoystick | undefined;
   private sprintButton: Phaser.GameObjects.Arc | undefined;
 
   constructor() {
@@ -67,12 +58,6 @@ export class Game extends Phaser.Scene {
       .setOrigin(0);
 
     this.input.keyboard?.on("keydown", (event: KeyboardEvent) => {
-      if (this.tutorialText.visible) {
-        this.tutorialText.setVisible(false);
-      }
-      if (!this.isStarted) {
-        this.isStarted = true;
-      }
       if (event.key === "Shift") {
         this.enableSprint();
       }
@@ -152,16 +137,11 @@ export class Game extends Phaser.Scene {
     ];
 
     // Create tutorial text
-    this.tutorialText = this.add
-      .text(
+    this.startLayer ??= this.add.container(0, 0, [
+      this.add.text(
         0,
         0,
-        [
-          "Use arrow keys to move the snake",
-          "Hold Shift to speed up",
-          "",
-          "Press any key to start",
-        ],
+        ["Use arrow keys to move the snake", "Hold Shift to speed up"],
         {
           fontFamily: "Arial Black",
           fontSize: 28,
@@ -172,17 +152,23 @@ export class Game extends Phaser.Scene {
           backgroundColor: "#000000aa",
           fixedWidth: 1024,
           fixedHeight: 768,
-          padding: { top: (768 - 28 * 4) / 2, bottom: 0 },
+          padding: { top: 768 * 0.3, bottom: 0 },
         }
-      )
-      .setInteractive()
-      .once("pointerdown", (e: Phaser.Input.Pointer) => {
-        if (!e.wasTouch) return;
-        this.tutorialText.setVisible(false);
-        this.sprintButton?.setVisible(true);
-        this.joystick?.setVisible(true);
-        this.isStarted = true;
-      });
+      ),
+      // button start
+      this.createGreenButton(
+        "Start",
+        (e) => {
+          if (e.wasTouch) {
+            this.sprintButton?.setVisible(true);
+            this.joystick?.setVisible(true);
+          }
+          this.startLayer.setVisible(false);
+          this.isStarted = true;
+        },
+        { x: 1024 / 2, y: 768 * 0.6 }
+      ),
+    ]);
 
     this.sprintButton = this.add
       .circle(200, 768 - 200, 300, 0xffffff, 0.05)
@@ -340,54 +326,33 @@ export class Game extends Phaser.Scene {
     this.isGameOver = true;
     this.isStarted = false;
 
-    // // Reset directions
-    // this.direction = "right";
-    // this.nextDirection = "right";
-
-    // // Destroy all existing game objects
-    // this.snake.forEach((segment) => segment.destroy());
-    // this.snake = [];
-    // if (this.food) {
-    //   this.food.destroy();
-    // }
-
-    const resetGameHandler = () => {
-      if (this.isGameOver) {
-        this.input.keyboard?.off("keydown", resetGameHandler);
-        this.reset();
-      }
-    };
-
-    this.add
-      .text(0, 0, "GAME OVER", {
-        fontFamily: "Arial Black",
-        fontSize: 64,
-        color: "#ffffff",
-        stroke: "#000000",
-        strokeThickness: 8,
-        align: "center",
-        backgroundColor: "#00000053",
-        fixedWidth: 1024,
-        fixedHeight: 768,
-        padding: { top: (768 - 64) / 2, bottom: 0 },
-      })
-      .setInteractive()
-      .on("pointerdown", resetGameHandler);
-
-    this.add.text(0, 768 / 2 + 64, "Press any key to restart", {
-      fontFamily: "Arial",
-      fontSize: 24,
+    this.add.text(0, 0, "GAME OVER", {
+      fontFamily: "Arial Black",
+      fontSize: 64,
       color: "#ffffff",
       stroke: "#000000",
-      strokeThickness: 3,
+      strokeThickness: 8,
       align: "center",
+      backgroundColor: "#00000053",
       fixedWidth: 1024,
+      fixedHeight: 768,
+      padding: { top: (768 - 100 - 64) / 2, bottom: 0 },
     });
+
+    this.createGreenButton(
+      "Restart",
+      (_, button) => {
+        this.resetAndStart();
+        button.destroy();
+      },
+      {
+        x: 1024 / 2,
+        y: 768 / 2 + 64,
+      }
+    );
 
     this.input.keyboard?.removeAllListeners();
     this.disableSprint();
-
-    this.input.keyboard?.on("keydown", resetGameHandler);
   }
 
   enableSprint() {
@@ -405,5 +370,81 @@ export class Game extends Phaser.Scene {
   reset() {
     this.disableSprint();
     this.scene.restart();
+  }
+
+  resetAndStart() {
+    this.reset();
+    this.isStarted = true;
+  }
+
+  createGreenButton(
+    text: string,
+    onClick: (
+      e: Phaser.Input.Pointer,
+      button: Phaser.GameObjects.Container
+    ) => void,
+    {
+      x = 0,
+      y = 0,
+      width = 200,
+      height = 60,
+      fontSize = 28,
+    }: {
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      fontSize?: string | number;
+    } = {}
+  ) {
+    const button = this.add
+      .container(x, y, [
+        // Main button background
+        this.add
+          .graphics()
+          .fillStyle(0x22c55e)
+          .fillRoundedRect(-width / 2, -height / 2, width, height, height / 5),
+        // Top highlight bevel
+        this.add
+          .graphics()
+          .fillStyle(0x4ade80, 0.4)
+          .fillRoundedRect(
+            -width / 2 + 5,
+            -height / 2 + 5,
+            width - 10,
+            height / 3,
+            height / 6
+          ),
+        // Bottom shadow bevel
+        this.add
+          .graphics()
+          .fillStyle(0x166534, 0.3)
+          .fillRoundedRect(
+            -width / 2 + 5,
+            height / 6 - 5,
+            width - 10,
+            height / 3,
+            height / 6
+          ),
+        // Border
+        this.add
+          .graphics()
+          .lineStyle(3, 0x16a34a)
+          .strokeRoundedRect(-width / 2, -height / 2, width, height, 12),
+        // Text
+        this.add
+          .text(0, 0, text, {
+            fontFamily: "Arial Black",
+            fontSize,
+            color: "#ffffff",
+            stroke: "#000000",
+            strokeThickness: 8,
+          })
+          .setOrigin(0.5),
+      ])
+      .setSize(width, height)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", (e: Phaser.Input.Pointer) => onClick(e, button));
+    return button;
   }
 }

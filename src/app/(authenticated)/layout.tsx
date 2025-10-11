@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { FaGithub, FaUserEdit } from "react-icons/fa";
+import { GrTest } from "react-icons/gr";
 import { LuLogOut } from "react-icons/lu";
 import { User } from "@/lib/db/schema";
 import { UserAvatar } from "@/components/ui/avatar";
@@ -18,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { GameProvider } from "@/contexts/game-context";
+import Link from "next/link";
 
 export default function AuthenticatedLayout({
   children,
@@ -86,6 +88,10 @@ export default function AuthenticatedLayout({
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <GrTest />
+                    <Link href="/?phaser">Lab Version</Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
                       removeUser();

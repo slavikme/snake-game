@@ -117,7 +117,28 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* iOS PWA fullscreen support - only in standalone mode */
+  @media (display-mode: standalone) {
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    @supports (height: 100dvh) {
+      html,
+      body {
+        height: 100dvh;
+      }
+    }
   }
 }

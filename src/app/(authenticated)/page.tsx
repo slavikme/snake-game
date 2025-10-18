@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import IOSFullscreenHint from "@/components/ios-fullscreen-hint";
 
 const HomeContent = () => {
   const router = useRouter();
@@ -83,7 +84,10 @@ const HomeContent = () => {
                 <p className="text-sm text-neutral-500">
                   Phaser Game Mode - Use the controls as defined in the game.
                 </p>
-                <GameBoardPhaser />
+                <GameBoardPhaser
+                  initialWidth={256 * 4}
+                  initialHeight={256 * 4 * (9 / 16)}
+                />
               </>
             ) : (
               <>
@@ -107,6 +111,8 @@ const HomeContent = () => {
           </div>
         </div>
       </main>
+
+      {isPhaserMode && <IOSFullscreenHint />}
 
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent>

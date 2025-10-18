@@ -2,8 +2,20 @@
 
 import { useEffect, useRef } from "react";
 import type Phaser from "phaser";
+import {
+  DEFAULT_SCENE_WIDTH,
+  DEFAULT_SCENE_HEIGHT,
+} from "@/phaser/config/game-config";
 
-const GameBoardPhaser = () => {
+type GameBoardPhaserProps = {
+  initialWidth?: number;
+  initialHeight?: number;
+};
+
+const GameBoardPhaser = ({
+  initialWidth = DEFAULT_SCENE_WIDTH,
+  initialHeight = DEFAULT_SCENE_HEIGHT,
+}: GameBoardPhaserProps) => {
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const gameInstanceRef = useRef<Phaser.Game | null>(null);
 
@@ -48,15 +60,20 @@ const GameBoardPhaser = () => {
         // Initialize Phaser game
         const config = {
           type: PhaserLib.AUTO,
-          width: 1024,
-          height: 768,
+          width: initialWidth,
+          height: initialHeight,
           parent: gameContainerRef.current,
           backgroundColor: "#000000",
           scale: {
             mode: PhaserLib.Scale.FIT,
             autoCenter: PhaserLib.Scale.CENTER_BOTH,
+            fullscreenTarget: gameContainerRef.current,
           },
           scene: [Boot, Preloader, Game],
+          render: {
+            pixelArt: false,
+            antialias: true,
+          },
         } satisfies Phaser.Types.Core.GameConfig;
 
         console.log("Initializing Phaser game...");
@@ -78,10 +95,10 @@ const GameBoardPhaser = () => {
         gameInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [initialHeight, initialWidth]);
 
   return (
-    <div className="w-full flex justify-center h-192 max-h-screen">
+    <div className="w-full flex justify-center aspect-video max-h-screen">
       <div
         ref={gameContainerRef}
         id="phaser-game-container"

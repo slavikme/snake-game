@@ -14,12 +14,10 @@ import { useLocalStorage } from "usehooks-ts";
 import { User } from "@/lib/db/schema";
 
 // Helper function to normalize spaces
-function normalizeSpaces(str: string): string {
-  return str.replace(/\s+/g, " ");
-}
+const normalizeSpaces = (str: string): string => str.replace(/\s+/g, " ");
 
 // Helper function to validate name format
-function validateNameFormat(name: string): string | null {
+const validateNameFormat = (name: string): string | null => {
   const trimmed = name.trim();
   const normalized = normalizeSpaces(trimmed);
 
@@ -41,7 +39,7 @@ function validateNameFormat(name: string): string | null {
   }
 
   return null;
-}
+};
 
 const storageOptions = {
   initializeWithValue: false,

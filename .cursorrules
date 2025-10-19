@@ -26,6 +26,8 @@
   function handleClick() { ... }
   ```
 
+- **Remove braces**: Remove braces from arrow function if they have only a return
+
 ## TypeScript
 
 - **Type safety**: Always use proper TypeScript types, avoid `any`

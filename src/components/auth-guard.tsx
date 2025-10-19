@@ -7,10 +7,10 @@ import { useLocalStorage } from "usehooks-ts";
 import { User } from "@/lib/db/schema";
 import { Loader2 } from "lucide-react";
 
-interface AuthGuardProps {
+type AuthGuardProps = {
   children: React.ReactNode;
   requireAuth?: boolean;
-}
+};
 
 const storageOptions = {
   initializeWithValue: true,

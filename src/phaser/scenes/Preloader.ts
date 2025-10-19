@@ -12,19 +12,12 @@ export class Preloader extends Phaser.Scene {
 
     //  A simple progress bar. This is the outline of the bar.
     this.add
-      .rectangle(
-        this.scale.width / 2,
-        this.scale.height / 2,
-        GameConfig.PROGRESS_BAR_WIDTH,
-        GameConfig.PROGRESS_BAR_HEIGHT
-      )
+      .rectangle(this.scale.width / 2, this.scale.height / 2, GameConfig.PROGRESS_BAR_WIDTH, GameConfig.PROGRESS_BAR_HEIGHT)
       .setStrokeStyle(GameConfig.PROGRESS_BAR_BORDER_WIDTH, 0xffffff);
 
     //  This is the progress bar itself. It will increase in size from the left based on the % of progress.
     const bar = this.add.rectangle(
-      this.scale.width / 2 -
-        GameConfig.PROGRESS_BAR_WIDTH / 2 +
-        GameConfig.PROGRESS_BAR_INNER_PADDING,
+      this.scale.width / 2 - GameConfig.PROGRESS_BAR_WIDTH / 2 + GameConfig.PROGRESS_BAR_INNER_PADDING,
       this.scale.height / 2,
       GameConfig.PROGRESS_BAR_INNER_PADDING,
       GameConfig.PROGRESS_BAR_INNER_HEIGHT,
@@ -36,9 +29,7 @@ export class Preloader extends Phaser.Scene {
       //  Update the progress bar
       bar.width =
         GameConfig.PROGRESS_BAR_INNER_PADDING +
-        (GameConfig.PROGRESS_BAR_WIDTH -
-          2 * GameConfig.PROGRESS_BAR_INNER_PADDING) *
-          progress;
+        (GameConfig.PROGRESS_BAR_WIDTH - 2 * GameConfig.PROGRESS_BAR_INNER_PADDING) * progress;
     });
   }
 

@@ -2,20 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import type Phaser from "phaser";
-import {
-  DEFAULT_SCENE_WIDTH,
-  DEFAULT_SCENE_HEIGHT,
-} from "@/phaser/config/game-config";
+import { DEFAULT_SCENE_WIDTH, DEFAULT_SCENE_HEIGHT } from "@/phaser/config/game-config";
 
 type GameBoardPhaserProps = {
   initialWidth?: number;
   initialHeight?: number;
 };
 
-const GameBoardPhaser = ({
-  initialWidth = DEFAULT_SCENE_WIDTH,
-  initialHeight = DEFAULT_SCENE_HEIGHT,
-}: GameBoardPhaserProps) => {
+const GameBoardPhaser = ({ initialWidth = DEFAULT_SCENE_WIDTH, initialHeight = DEFAULT_SCENE_HEIGHT }: GameBoardPhaserProps) => {
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const gameInstanceRef = useRef<Phaser.Game | null>(null);
 
@@ -52,9 +46,7 @@ const GameBoardPhaser = ({
 
         // Clear any existing canvases in the container
         while (gameContainerRef.current.firstChild) {
-          gameContainerRef.current.removeChild(
-            gameContainerRef.current.firstChild
-          );
+          gameContainerRef.current.removeChild(gameContainerRef.current.firstChild);
         }
 
         // Initialize Phaser game
@@ -99,11 +91,7 @@ const GameBoardPhaser = ({
 
   return (
     <div className="w-full flex justify-center aspect-video max-h-screen">
-      <div
-        ref={gameContainerRef}
-        id="phaser-game-container"
-        className="relative w-full h-full"
-      />
+      <div ref={gameContainerRef} id="phaser-game-container" className="relative w-full h-full" />
     </div>
   );
 };

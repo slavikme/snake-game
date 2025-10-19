@@ -50,20 +50,12 @@ const IOSFullscreenHint = () => {
       </button>
 
       <div className="pr-8">
-        <p className="font-semibold mb-2">
-          🎮 Get Fullscreen Experience on iPhone
-        </p>
-        <p className="text-white/80 mb-2">
-          iOS Safari doesn&apos;t support fullscreen mode. Install as an app:
-        </p>
+        <p className="font-semibold mb-2">🎮 Get Fullscreen Experience on iPhone</p>
+        <p className="text-white/80 mb-2">iOS Safari doesn&apos;t support fullscreen mode. Install as an app:</p>
         <ol className="list-decimal list-inside text-white/80 space-y-1.5 ml-2 mb-2">
           <li>
             Tap the Share button (
-            <svg
-              className="inline w-4 h-4 mx-1"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="inline w-4 h-4 mx-1" fill="currentColor" viewBox="0 0 24 24">
               <path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z" />
             </svg>
             ) at the bottom
@@ -79,10 +71,7 @@ const IOSFullscreenHint = () => {
           </li>
           <li>Launch from your home screen for fullscreen mode</li>
         </ol>
-        <p className="text-xs text-white/60">
-          💡 The Safari address bar will be hidden when launched from home
-          screen
-        </p>
+        <p className="text-xs text-white/60">💡 The Safari address bar will be hidden when launched from home screen</p>
       </div>
     </div>
   );

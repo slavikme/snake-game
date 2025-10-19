@@ -1,9 +1,6 @@
 "use server";
 
-import {
-  createScore,
-  getLeaderboard as getLeaderboardQuery,
-} from "@/lib/db/queries";
+import { createScore, getLeaderboard as getLeaderboardQuery } from "@/lib/db/queries";
 import type { Score, User } from "@/lib/db/schema";
 
 type SaveScoreResult =
@@ -76,10 +73,7 @@ type GetLeaderboardResult =
       hasMore?: never;
     };
 
-export const getLeaderboard = async (
-  limit: number = 100,
-  userId?: string
-): Promise<GetLeaderboardResult> => {
+export const getLeaderboard = async (limit: number = 100, userId?: string): Promise<GetLeaderboardResult> => {
   try {
     if (limit <= 0 || limit > 1000) {
       return {
@@ -111,10 +105,7 @@ type GetPaginatedLeaderboardResult =
       hasMore?: never;
     };
 
-export const getPaginatedLeaderboard = async (
-  offset: number = 0,
-  limit: number = 20
-): Promise<GetPaginatedLeaderboardResult> => {
+export const getPaginatedLeaderboard = async (offset: number = 0, limit: number = 20): Promise<GetPaginatedLeaderboardResult> => {
   try {
     if (limit <= 0 || limit > 100) {
       return {
@@ -131,15 +122,9 @@ export const getPaginatedLeaderboard = async (
     }
 
     // Fetch one more than requested to check if there are more results
-    const leaderboardScores = await getLeaderboardQuery(
-      limit + 1,
-      undefined,
-      offset
-    );
+    const leaderboardScores = await getLeaderboardQuery(limit + 1, undefined, offset);
     const hasMore = leaderboardScores.length > limit;
-    const scores = hasMore
-      ? leaderboardScores.slice(0, limit)
-      : leaderboardScores;
+    const scores = hasMore ? leaderboardScores.slice(0, limit) : leaderboardScores;
 
     return { success: true, scores, hasMore };
   } catch (error) {

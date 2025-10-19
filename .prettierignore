@@ -1,0 +1,41 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+out
+build
+dist
+
+# Cache
+.cache
+.turbo
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Database
+drizzle
+
+# Lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Public assets (images, etc.)
+public/**/*.png
+public/**/*.jpg
+public/**/*.jpeg
+public/**/*.gif
+public/**/*.svg
+public/**/*.ico
+public/**/*.icns
+

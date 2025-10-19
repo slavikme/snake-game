@@ -15,14 +15,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { useGame } from "@/contexts/game-context";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
@@ -39,38 +32,35 @@ export default function ScoresPage() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  const loadScores = useCallback(
-    async (offset: number = 0, append: boolean = false) => {
-      try {
-        if (append) {
-          setLoadingMore(true);
-        } else {
-          setLoading(true);
-        }
-
-        const result = await getPaginatedLeaderboard(offset, ITEMS_PER_PAGE);
-
-        if (result.success) {
-          if (append) {
-            setScores((prev) => [...prev, ...result.scores]);
-          } else {
-            setScores(result.scores);
-          }
-          setHasMore(result.hasMore);
-          setError(null);
-        } else {
-          setError(result.error);
-        }
-      } catch (err) {
-        setError("Failed to load scores");
-        console.error(err);
-      } finally {
-        setLoading(false);
-        setLoadingMore(false);
+  const loadScores = useCallback(async (offset: number = 0, append: boolean = false) => {
+    try {
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
       }
-    },
-    []
-  );
+
+      const result = await getPaginatedLeaderboard(offset, ITEMS_PER_PAGE);
+
+      if (result.success) {
+        if (append) {
+          setScores((prev) => [...prev, ...result.scores]);
+        } else {
+          setScores(result.scores);
+        }
+        setHasMore(result.hasMore);
+        setError(null);
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError("Failed to load scores");
+      console.error(err);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }, []);
 
   useEffect(() => {
     loadScores();
@@ -139,21 +129,15 @@ export default function ScoresPage() {
             {loading && scores.length === 0 ? (
               <div className="text-center py-8">Loading scores...</div>
             ) : error && scores.length === 0 ? (
-              <div className="text-center py-8 text-red-500">
-                Error: {error}
-              </div>
+              <div className="text-center py-8 text-red-500">Error: {error}</div>
             ) : (
               <>
                 <ScoresTable scores={scores} loading={false} error={null} />
 
-                {loadingMore && (
-                  <div className="text-center py-4">Loading more...</div>
-                )}
+                {loadingMore && <div className="text-center py-4">Loading more...</div>}
 
                 {!hasMore && scores.length > 0 && (
-                  <div className="text-center py-4 text-muted-foreground">
-                    No more scores to load
-                  </div>
+                  <div className="text-center py-4 text-muted-foreground">No more scores to load</div>
                 )}
 
                 {/* Intersection observer target */}
@@ -168,16 +152,12 @@ export default function ScoresPage() {
             <DialogHeader>
               <DialogTitle>Leave Scores Page?</DialogTitle>
               <DialogDescription>
-                You are currently in the middle of a game. Are you sure you want
-                to return to the game? This will navigate away from the scores
-                page.
+                You are currently in the middle of a game. Are you sure you want to return to the game? This will navigate away
+                from the scores page.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setShowConfirmDialog(false)}
-              >
+              <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
                 Stay Here
               </Button>
               <Button onClick={handleConfirmNavigation}>Return to Game</Button>

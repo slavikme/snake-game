@@ -72,11 +72,7 @@ export type UseSnakeOptions = {
   onGameOver?: ({ speed, stepMs }: { speed: number; stepMs: number }) => void;
 };
 
-const useSnake = (
-  columns: number,
-  rows: number,
-  options: UseSnakeOptions = {}
-) => {
+const useSnake = (columns: number, rows: number, options: UseSnakeOptions = {}) => {
   const {
     initialIntervalMs = 200 * (2000 / (columns * rows * 6)),
     intervalReductionFactor = SPEED_REDUCTION_FACTOR,
@@ -110,10 +106,7 @@ const useSnake = (
   const [lastEatTime, setLastEatTime] = useState(0);
   const [arrowKeyPressCount, setArrowKeyPressCount] = useState(0);
 
-  const isBodyCell = useCallback(
-    (x: number, y: number) => body.some((cell) => cell.x === x && cell.y === y),
-    [body]
-  );
+  const isBodyCell = useCallback((x: number, y: number) => body.some((cell) => cell.x === x && cell.y === y), [body]);
 
   const generateFoodPosition = useCallback(() => {
     const position = {
@@ -131,15 +124,9 @@ const useSnake = (
     y: 0,
   });
 
-  const isOutOfBounds = useCallback(
-    (x: number, y: number) => x < 0 || x >= columns || y < 0 || y >= rows,
-    [columns, rows]
-  );
+  const isOutOfBounds = useCallback((x: number, y: number) => x < 0 || x >= columns || y < 0 || y >= rows, [columns, rows]);
 
-  const isFoodPosition = useCallback(
-    (x: number, y: number) => x === foodPosition.x && y === foodPosition.y,
-    [foodPosition]
-  );
+  const isFoodPosition = useCallback((x: number, y: number) => x === foodPosition.x && y === foodPosition.y, [foodPosition]);
 
   const doStep = useCallback(() => {
     const dir = directionRef.current;
@@ -153,10 +140,7 @@ const useSnake = (
       isTail: body.length === 1,
     };
     let grow = false;
-    if (
-      isOutOfBounds(newHead.x, newHead.y) ||
-      isBodyCell(newHead.x, newHead.y)
-    ) {
+    if (isOutOfBounds(newHead.x, newHead.y) || isBodyCell(newHead.x, newHead.y)) {
       setPaused(true);
       setGameOver(true);
       onGameOver?.({ speed, stepMs });
@@ -190,11 +174,7 @@ const useSnake = (
     } else {
       if (grow) {
         // the snake stays at the same position with the same length, except the head is no longer a head
-        setBody([
-          newHead,
-          { ...body[0], next: newHead.next, isHead: false },
-          ...body.slice(1),
-        ]);
+        setBody([newHead, { ...body[0], next: newHead.next, isHead: false }, ...body.slice(1)]);
       } else {
         // the head is no longer the head, and the tail is no longer the tail. The new tail is the second to last cell.
         if (body.length === 2) {
@@ -336,10 +316,7 @@ const useSnake = (
     }
   }, [paused, lastEatTime]);
 
-  const getCell = useCallback(
-    (x: number, y: number) => body.find((cell) => cell.x === x && cell.y === y),
-    [body]
-  );
+  const getCell = useCallback((x: number, y: number) => body.find((cell) => cell.x === x && cell.y === y), [body]);
 
   return {
     direction: directionRef.current,

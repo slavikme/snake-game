@@ -3,21 +3,8 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import type { Score, User } from "@/lib/db/schema";
 import Link from "next/link";
 
@@ -42,16 +29,8 @@ const getRank = (index: number) => {
   }
 };
 
-const ScoresTable = ({
-  scores,
-  loading = false,
-  error = null,
-  showMoreLink = false,
-  onShowMoreClick,
-}: ScoresTableProps) => {
-  const [selectedScore, setSelectedScore] = useState<
-    (Score & { user: User }) | null
-  >(null);
+const ScoresTable = ({ scores, loading = false, error = null, showMoreLink = false, onShowMoreClick }: ScoresTableProps) => {
+  const [selectedScore, setSelectedScore] = useState<(Score & { user: User }) | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleRowClick = (score: Score & { user: User }) => {
@@ -95,9 +74,7 @@ const ScoresTable = ({
               )}
             >
               <TableCell className="font-bold">
-                <span className="flex items-center gap-2">
-                  {getRank(index)}
-                </span>
+                <span className="flex items-center gap-2">{getRank(index)}</span>
               </TableCell>
               <TableCell
                 className={cn(
@@ -112,15 +89,7 @@ const ScoresTable = ({
               <TableCell className="text-right">
                 <Badge
                   className="font-bold text-md"
-                  variant={
-                    index === 0
-                      ? "gold"
-                      : index === 1
-                      ? "silver"
-                      : index === 2
-                      ? "bronze"
-                      : "default"
-                  }
+                  variant={index === 0 ? "gold" : index === 1 ? "silver" : index === 2 ? "bronze" : "default"}
                 >
                   {score.score.toLocaleString(undefined, {
                     minimumFractionDigits: 0,
@@ -154,81 +123,55 @@ const ScoresTable = ({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl">Score Details</DialogTitle>
-            <DialogDescription>
-              Detailed information about this game session
-            </DialogDescription>
+            <DialogDescription>Detailed information about this game session</DialogDescription>
           </DialogHeader>
           {selectedScore && (
             <div className="space-y-4 py-4">
               {/* Rank Display */}
               <div className="flex items-center justify-center py-6 border-b-2">
                 {(() => {
-                  const rank = scores.findIndex(
-                    (s) => s.id === selectedScore.id
-                  );
+                  const rank = scores.findIndex((s) => s.id === selectedScore.id);
                   if (rank === 0) {
                     return (
                       <div className="flex flex-col items-center gap-2">
                         <div className="text-7xl animate-bounce">🏆</div>
-                        <div className="text-5xl font-black text-yellow-500 drop-shadow-lg">
-                          1st Place
-                        </div>
-                        <div className="text-xl font-bold text-yellow-600">
-                          Champion!
-                        </div>
+                        <div className="text-5xl font-black text-yellow-500 drop-shadow-lg">1st Place</div>
+                        <div className="text-xl font-bold text-yellow-600">Champion!</div>
                       </div>
                     );
                   } else if (rank === 1) {
                     return (
                       <div className="flex flex-col items-center gap-2">
                         <div className="text-6xl">🥈</div>
-                        <div className="text-4xl font-black text-gray-400 drop-shadow-lg">
-                          2nd Place
-                        </div>
-                        <div className="text-lg font-bold text-gray-500">
-                          Outstanding!
-                        </div>
+                        <div className="text-4xl font-black text-gray-400 drop-shadow-lg">2nd Place</div>
+                        <div className="text-lg font-bold text-gray-500">Outstanding!</div>
                       </div>
                     );
                   } else if (rank === 2) {
                     return (
                       <div className="flex flex-col items-center gap-2">
                         <div className="text-6xl">🥉</div>
-                        <div className="text-4xl font-black text-amber-700 drop-shadow-lg">
-                          3rd Place
-                        </div>
-                        <div className="text-lg font-bold text-amber-800">
-                          Excellent!
-                        </div>
+                        <div className="text-4xl font-black text-amber-700 drop-shadow-lg">3rd Place</div>
+                        <div className="text-lg font-bold text-amber-800">Excellent!</div>
                       </div>
                     );
                   } else {
                     return (
                       <div className="flex flex-col items-center gap-2">
                         <div className="text-5xl">🎮</div>
-                        <div className="text-3xl font-bold text-foreground">
-                          Rank #{rank + 1}
-                        </div>
-                        <div className="text-sm font-medium text-muted-foreground">
-                          Great effort!
-                        </div>
+                        <div className="text-3xl font-bold text-foreground">Rank #{rank + 1}</div>
+                        <div className="text-sm font-medium text-muted-foreground">Great effort!</div>
                       </div>
                     );
                   }
                 })()}
               </div>
               <div className="flex items-center justify-between border-b pb-3">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Player
-                </span>
-                <span className="text-lg font-bold">
-                  {selectedScore.user.name}
-                </span>
+                <span className="text-sm font-medium text-muted-foreground">Player</span>
+                <span className="text-lg font-bold">{selectedScore.user.name}</span>
               </div>
               <div className="flex items-center justify-between border-b pb-3">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Score
-                </span>
+                <span className="text-sm font-medium text-muted-foreground">Score</span>
                 <Badge variant="default" className="text-lg font-bold">
                   {selectedScore.score.toLocaleString(undefined, {
                     minimumFractionDigits: 0,
@@ -237,44 +180,27 @@ const ScoresTable = ({
                 </Badge>
               </div>
               <div className="flex items-center justify-between border-b pb-3">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Level
-                </span>
-                <span className="text-lg font-semibold">
-                  {selectedScore.level}
-                </span>
+                <span className="text-sm font-medium text-muted-foreground">Level</span>
+                <span className="text-lg font-semibold">{selectedScore.level}</span>
               </div>
               <div className="flex items-center justify-between border-b pb-3">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Speed
-                </span>
-                <span className="text-lg font-semibold">
-                  {selectedScore.speedMs}ms
-                </span>
+                <span className="text-sm font-medium text-muted-foreground">Speed</span>
+                <span className="text-lg font-semibold">{selectedScore.speedMs}ms</span>
               </div>
               <div className="flex items-center justify-between border-b pb-3">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Apples Collected
-                </span>
-                <span className="text-lg font-semibold">
-                  🍎 {selectedScore.apples}
-                </span>
+                <span className="text-sm font-medium text-muted-foreground">Apples Collected</span>
+                <span className="text-lg font-semibold">🍎 {selectedScore.apples}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Date
-                </span>
+                <span className="text-sm font-medium text-muted-foreground">Date</span>
                 <span className="text-sm font-semibold">
-                  {new Date(selectedScore.createdAt).toLocaleDateString(
-                    undefined,
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }
-                  )}
+                  {new Date(selectedScore.createdAt).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </span>
               </div>
             </div>

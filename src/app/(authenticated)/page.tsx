@@ -9,14 +9,7 @@ import ScoresTable from "@/components/ScoresTable";
 import { useEffect, useState, useCallback, Suspense } from "react";
 import { getLeaderboard } from "@/lib/actions/scores";
 import { useGame } from "@/contexts/game-context";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import IOSFullscreenHint from "@/components/ios-fullscreen-hint";
 
@@ -81,19 +74,13 @@ const HomeContent = () => {
           <div className="flex flex-col gap-2 w-full h-full">
             {isPhaserMode ? (
               <>
-                <p className="text-sm text-neutral-500">
-                  Phaser Game Mode - Use the controls as defined in the game.
-                </p>
-                <GameBoardPhaser
-                  initialWidth={256 * 4}
-                  initialHeight={256 * 4 * (9 / 16)}
-                />
+                <p className="text-sm text-neutral-500">Phaser Game Mode - Use the controls as defined in the game.</p>
+                <GameBoardPhaser initialWidth={256 * 4} initialHeight={256 * 4 * (9 / 16)} />
               </>
             ) : (
               <>
                 <p className="text-sm text-neutral-500">
-                  Use the <strong>arrow keys</strong> to move the snake. Press
-                  the <strong>spacebar</strong> to pause the game.
+                  Use the <strong>arrow keys</strong> to move the snake. Press the <strong>spacebar</strong> to pause the game.
                 </p>
                 <GameBoard onScoreSaved={handleScoreSaved} />
               </>
@@ -119,15 +106,11 @@ const HomeContent = () => {
           <DialogHeader>
             <DialogTitle>Leave Game?</DialogTitle>
             <DialogDescription>
-              You are currently in the middle of a game. Are you sure you want
-              to leave? Your progress will be lost.
+              You are currently in the middle of a game. Are you sure you want to leave? Your progress will be lost.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowConfirmDialog(false)}
-            >
+            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
               Cancel
             </Button>
             <Button onClick={handleConfirmNavigation}>Leave Game</Button>
@@ -140,13 +123,7 @@ const HomeContent = () => {
 
 export default function Home() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex justify-center items-center min-h-screen">
-          Loading...
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
       <HomeContent />
     </Suspense>
   );

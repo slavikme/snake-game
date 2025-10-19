@@ -7,13 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldError,
-} from "@/components/ui/field";
+import { Field, FieldDescription, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { checkNameAvailability, registerNewUser } from "@/lib/actions/auth";
 import { useLocalStorage } from "usehooks-ts";
@@ -53,10 +47,7 @@ const storageOptions = {
   initializeWithValue: false,
 };
 
-export function SignupForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -64,16 +55,8 @@ export function SignupForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isNameAvailable, setIsNameAvailable] = useState(false);
   const [, setAuthToken] = useLocalStorage("authToken", "", storageOptions);
-  const [, setUser] = useLocalStorage<User | null>(
-    "user",
-    null,
-    storageOptions
-  );
-  const [, setAuthCreatedAt] = useLocalStorage<string | null>(
-    "authCreatedAt",
-    null,
-    storageOptions
-  );
+  const [, setUser] = useLocalStorage<User | null>("user", null, storageOptions);
+  const [, setAuthCreatedAt] = useLocalStorage<string | null>("authCreatedAt", null, storageOptions);
 
   // Debounced name availability check
   useEffect(() => {
@@ -166,24 +149,13 @@ export function SignupForm({
       <form onSubmit={handleSubmit}>
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
-            <Link
-              href="/"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
+            <Link href="/" className="flex flex-col items-center gap-2 font-medium">
               <div className="flex size-16 items-center justify-center rounded-md">
-                <Image
-                  src="/icon.png"
-                  alt="Snake Game Logo"
-                  width={64}
-                  height={64}
-                  priority
-                />
+                <Image src="/icon.png" alt="Snake Game Logo" width={64} height={64} priority />
               </div>
             </Link>
             <h1 className="text-xl font-bold">Welcome to Snake Game!</h1>
-            <FieldDescription>
-              Enter your name to start playing and compete with others
-            </FieldDescription>
+            <FieldDescription>Enter your name to start playing and compete with others</FieldDescription>
           </div>
           <Field>
             <FieldLabel htmlFor="name">Name</FieldLabel>
@@ -198,13 +170,9 @@ export function SignupForm({
               aria-invalid={error ? "true" : "false"}
             />
             {error && <FieldError>{error}</FieldError>}
-            {isCheckingName && (
-              <FieldDescription>Checking availability...</FieldDescription>
-            )}
+            {isCheckingName && <FieldDescription>Checking availability...</FieldDescription>}
             {isNameAvailable && !isCheckingName && (
-              <FieldDescription className="text-green-600">
-                Name is available!
-              </FieldDescription>
+              <FieldDescription className="text-green-600">Name is available!</FieldDescription>
             )}
           </Field>
           <Field>

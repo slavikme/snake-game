@@ -1,15 +1,9 @@
 "use server";
 
-import {
-  isNameExists,
-  registerUser,
-  getUserByAuthToken,
-} from "@/lib/db/queries";
+import { isNameExists, registerUser, getUserByAuthToken } from "@/lib/db/queries";
 import type { User } from "@/lib/db/schema";
 
-type CheckNameResult =
-  | { exists: boolean; error?: never }
-  | { error: string; exists?: never };
+type CheckNameResult = { exists: boolean; error?: never } | { error: string; exists?: never };
 
 type RegisterResult =
   | {
@@ -39,9 +33,7 @@ type ValidateTokenResult =
       user?: never;
     };
 
-export const checkNameAvailability = async (
-  name: string
-): Promise<CheckNameResult> => {
+export const checkNameAvailability = async (name: string): Promise<CheckNameResult> => {
   try {
     if (!name || typeof name !== "string") {
       return { error: "Name is required" };
@@ -55,9 +47,7 @@ export const checkNameAvailability = async (
   }
 };
 
-export const registerNewUser = async (
-  name: string
-): Promise<RegisterResult> => {
+export const registerNewUser = async (name: string): Promise<RegisterResult> => {
   try {
     if (!name || typeof name !== "string") {
       return { error: "Name is required" };
@@ -78,9 +68,7 @@ export const registerNewUser = async (
   }
 };
 
-export const validateAuthToken = async (
-  token: string
-): Promise<ValidateTokenResult> => {
+export const validateAuthToken = async (token: string): Promise<ValidateTokenResult> => {
   try {
     if (!token || typeof token !== "string") {
       return { valid: false, error: "Invalid token" };

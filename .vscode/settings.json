@@ -1,0 +1,31 @@
+{
+  // Editor line width settings
+  "editor.wordWrapColumn": 130,
+  "editor.rulers": [130],
+
+  // Prettier settings (if you're using Prettier)
+  "prettier.printWidth": 130,
+
+  // ESLint integration
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+
+  // Format on save settings
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // Ensure ESLint is used for formatting
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

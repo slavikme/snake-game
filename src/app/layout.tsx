@@ -14,8 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Snake Game - Classic Retro Game",
-  description:
-    "Play the classic Snake game in your browser. A fun and addictive retro game for all ages.",
+  description: "Play the classic Snake game in your browser. A fun and addictive retro game for all ages.",
   applicationName: "Snake Game",
   authors: [{ name: "Slavik Meltser" }],
   keywords: ["snake", "game", "retro", "classic", "arcade", "browser game"],
@@ -57,14 +56,12 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Snake Game",
     title: "Snake Game - Classic Retro Game",
-    description:
-      "Play the classic Snake game in your browser. A fun and addictive retro game for all ages.",
+    description: "Play the classic Snake game in your browser. A fun and addictive retro game for all ages.",
   },
   twitter: {
     card: "summary",
     title: "Snake Game - Classic Retro Game",
-    description:
-      "Play the classic Snake game in your browser. A fun and addictive retro game for all ages.",
+    description: "Play the classic Snake game in your browser. A fun and addictive retro game for all ages.",
   },
 };
 
@@ -84,11 +81,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
     </html>
   );
 }

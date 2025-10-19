@@ -20,21 +20,9 @@ export const AuthGuard = ({ children, requireAuth = true }: AuthGuardProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isChecking, setIsChecking] = useState(true);
-  const [authToken, , removeAuthToken] = useLocalStorage(
-    "authToken",
-    "",
-    storageOptions
-  );
-  const [, , removeAuthCreatedAt] = useLocalStorage<string | null>(
-    "authCreatedAt",
-    null,
-    storageOptions
-  );
-  const [, setUser, removeUser] = useLocalStorage<User | null>(
-    "user",
-    null,
-    storageOptions
-  );
+  const [authToken, , removeAuthToken] = useLocalStorage("authToken", "", storageOptions);
+  const [, , removeAuthCreatedAt] = useLocalStorage<string | null>("authCreatedAt", null, storageOptions);
+  const [, setUser, removeUser] = useLocalStorage<User | null>("user", null, storageOptions);
 
   useEffect(() => {
     if (!isChecking) return;
@@ -100,17 +88,7 @@ export const AuthGuard = ({ children, requireAuth = true }: AuthGuardProps) => {
     };
 
     checkAuth();
-  }, [
-    pathname,
-    router,
-    requireAuth,
-    authToken,
-    setUser,
-    isChecking,
-    removeAuthToken,
-    removeUser,
-    removeAuthCreatedAt,
-  ]);
+  }, [pathname, router, requireAuth, authToken, setUser, isChecking, removeAuthToken, removeUser, removeAuthCreatedAt]);
 
   // Show nothing while checking to avoid flash of content
   if (isChecking) {

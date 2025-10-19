@@ -21,11 +21,7 @@ import {
 import { GameProvider } from "@/contexts/game-context";
 import Link from "next/link";
 
-export default function AuthenticatedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [user, , removeUser] = useLocalStorage<User | null>("user", null, {
@@ -34,13 +30,9 @@ export default function AuthenticatedLayout({
   const [, , removeAuthToken] = useLocalStorage("authToken", "", {
     initializeWithValue: false,
   });
-  const [, , removeAuthCreatedAt] = useLocalStorage<string | null>(
-    "authCreatedAt",
-    null,
-    {
-      initializeWithValue: false,
-    }
-  );
+  const [, , removeAuthCreatedAt] = useLocalStorage<string | null>("authCreatedAt", null, {
+    initializeWithValue: false,
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -51,13 +43,7 @@ export default function AuthenticatedLayout({
       <div className="relative font-sans flex flex-col items-center gap-4 justify-between min-h-screen bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 from-slate-100 via-slate-200 to-slate-100">
         <header className="flex gap-2 justify-between w-full p-3">
           <h1 className="text-2xl font-bold flex gap-3 items-center">
-            <Image
-              src="/icon-96.png"
-              alt="Snake Game Icon"
-              width={40}
-              height={40}
-              className="inline-block"
-            />
+            <Image src="/icon-96.png" alt="Snake Game Icon" width={40} height={40} className="inline-block" />
             Snake Game
           </h1>
           {mounted ? (
@@ -68,14 +54,9 @@ export default function AuthenticatedLayout({
               <DropdownMenuContent className="min-w-40">
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <UserAvatar
-                      className="size-10 text-lg"
-                      name={user?.name ?? ""}
-                    />
+                    <UserAvatar className="size-10 text-lg" name={user?.name ?? ""} />
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-bold text-lg">
-                        {user?.name ?? ""}
-                      </span>
+                      <span className="truncate font-bold text-lg">{user?.name ?? ""}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>

@@ -6,10 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * Throttle a callback to a certain delay, It will only call the callback if the delay has passed, with the arguments
  * from the last call
  */
-const useThrottleCallback = <Params extends unknown[], Return>(
-  callback: (...args: Params) => Return,
-  delay: number
-) => {
+const useThrottleCallback = <Params extends unknown[], Return>(callback: (...args: Params) => Return, delay: number) => {
   const lastCall = useRef(0);
   const timeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -39,8 +36,7 @@ const useThrottleCallback = <Params extends unknown[], Return>(
 
 const supabase = createClient();
 
-const generateRandomColor = () =>
-  `hsl(${Math.floor(Math.random() * 360)}, 100%, 70%)`;
+const generateRandomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 100%, 70%)`;
 
 const generateRandomNumber = () => Math.floor(Math.random() * 100);
 
@@ -70,9 +66,7 @@ export const useRealtimeCursors = ({
 }) => {
   const [color] = useState(generateRandomColor());
   const [userId] = useState(generateRandomNumber());
-  const [cursors, setCursors] = useState<Record<string, CursorEventPayload>>(
-    {}
-  );
+  const [cursors, setCursors] = useState<Record<string, CursorEventPayload>>({});
 
   const channelRef = useRef<RealtimeChannel | null>(null);
 
@@ -109,26 +103,22 @@ export const useRealtimeCursors = ({
     channelRef.current = channel;
 
     channel
-      .on(
-        "broadcast",
-        { event: EVENT_NAME },
-        (data: { payload: CursorEventPayload }) => {
-          const { user } = data.payload;
-          // Don't render your own cursor
-          if (user.id === userId) return;
+      .on("broadcast", { event: EVENT_NAME }, (data: { payload: CursorEventPayload }) => {
+        const { user } = data.payload;
+        // Don't render your own cursor
+        if (user.id === userId) return;
 
-          setCursors((prev) => {
-            if (prev[userId]) {
-              delete prev[userId];
-            }
+        setCursors((prev) => {
+          if (prev[userId]) {
+            delete prev[userId];
+          }
 
-            return {
-              ...prev,
-              [user.id]: data.payload,
-            };
-          });
-        }
-      )
+          return {
+            ...prev,
+            [user.id]: data.payload,
+          };
+        });
+      })
       .subscribe();
 
     return () => {

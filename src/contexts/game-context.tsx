@@ -12,11 +12,7 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [isGameInProgress, setIsGameInProgress] = useState(false);
 
-  return (
-    <GameContext.Provider value={{ isGameInProgress, setIsGameInProgress }}>
-      {children}
-    </GameContext.Provider>
-  );
+  return <GameContext.Provider value={{ isGameInProgress, setIsGameInProgress }}>{children}</GameContext.Provider>;
 };
 
 export const useGame = () => {
